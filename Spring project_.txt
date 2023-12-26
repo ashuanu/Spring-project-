@@ -1,0 +1,554 @@
+STUDENT.JAVA===================>
+
+package com.company.entity;
+
+import jakarta.persistence.Entity;
+import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
+import lombok.Data
+public class Student {
+@Id
+    private int studentID;
+    private String firstName;
+    private String lastName;
+    private String dateOfBirth;
+    private String email;
+    private String phoneNumber;
+}
+
+COURSE.JAVA=========================>
+
+package com.company.entity;
+
+import jakarta.persistence.Entity;
+import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
+import lombok.Data
+
+public class Course {
+@Id
+    private int courseID;
+    private String courseName;
+    private int credits;
+}
+
+RESULT.JAVA=================>
+
+package com.company.entity;
+
+import jakarta.persistence.Entity;
+import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
+import lombok.Data
+
+public class Result {
+@Id
+    private int resultID;  
+    private String semester;
+    private String subjectName;
+    private int marks;
+    private String grade;
+
+@ManyToOne
+    @JoinColumn(name = "order_id")
+    private Student student;
+ @ManyToOne
+    @JoinColumn(name = "course_id")
+    private Course course;
+}
+
+
+SERVICE CLASSES
+REPOSITARY CLASSES
+
+STUDENTREPOSITARY.JAVA:---->
+
+package com.company.repository;
+
+import java.util.List;
+
+import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
+
+import com.company.entity.student;
+
+public interface StudentRepository extends JpaRepository<Student, Integer> {
+	
+}
+
+
+COURSEREPOSITARY.JAVA:---->
+
+package com.company.ecommerce.repository;
+
+
+import java.util.List;
+
+import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
+
+import com.company.ecommerce.entity.Course;
+
+public interface CourseRepository extends JpaRepository<Course,Integer>{
+
+}
+
+RESULTREPOSITARY.JAVA:-->
+
+package com.company.ecommerce.repository;
+
+import java.util.List;
+
+import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
+
+import com.company.ecommerce.entity.Result;
+
+public interface ResultRepository extends JpaRepository<Result,Integer>{
+
+}
+
+SERVICE CLASSES:---------------------------------->
+
+// StudentService.java=====================>
+
+package com.company.resultmanagement.service;
+
+import java.util.List;
+
+import com.company.resultmanagement.entity.Student;
+
+public interface StudentService {
+
+    List<Student> getAllStudents();
+
+    String insertStudent(Student student);
+
+    String updateStudent(Student student);
+
+    Student getStudentById(Integer id);
+
+    String deleteStudent(Integer id);
+
+    Student getStudentById(Integer id);
+
+}
+
+// CourseService.java========================>
+
+package com.company.resultmanagement.service;
+
+import java.util.List;
+
+import com.company.resultmanagement.entity.Course;
+
+public interface CourseService {
+
+    List<Course> getAllCourses();
+
+    String insertCourse(Course course);
+
+    String updateCourse(Course course);
+
+    Course getCourseById(Integer id);
+
+    String deleteCourse(Integer id);
+
+    Course getCourseByName(String courseName);
+}
+
+// ResultService.java====================>
+
+package com.company.resultmanagement.service;
+
+import java.util.List;
+
+import com.company.resultmanagement.entity.Result;
+
+public interface ResultService {
+
+    List<Result> getAllResults();
+
+    String insertResult(Result result);
+
+    String updateResult(Result result);
+
+    Result getResultById(Integer id);
+
+    String deleteResult(Integer id);
+
+    Result getResultByStudentAndCourse(Integer studentId, Integer courseId);
+}
+
+
+
+
+SERVICEIMPL
+
+// StudentServiceImpl.java===============================>
+
+package com.company.resultmanagement.service.impl;
+
+import java.util.List;
+
+import org.springframework.stereotype.Service;
+
+import com.company.resultmanagement.entity.Student;
+import com.company.resultmanagement.repository.StudentRepository;
+import com.company.resultmanagement.service.StudentService;
+
+@Service
+public class StudentServiceImpl implements StudentService {
+
+    private final StudentRepository studentRepository;
+
+    public StudentServiceImpl(StudentRepository studentRepository) {
+        this.studentRepository = studentRepository;
+    }
+
+    @Override
+    public List<Student> getAllStudents() {
+        return studentRepository.findAllStudents();
+    }
+
+    @Override
+    public String insertStudent(Student student) {
+        studentRepository.save(student);
+        return "Student details inserted successfully.";
+    }
+
+    @Override
+    public String updateStudent(Student student) {
+        studentRepository.save(student);
+        return "Student details updated successfully.";
+    }
+
+    @Override
+    public Student getStudentById(Integer id) {
+        return studentRepository.findById(id).orElse(null);
+    }
+
+    @Override
+    public String deleteStudent(Integer id) {
+        studentRepository.deleteById(id);
+        return "Student deleted successfully.";
+    }
+
+    @Override
+    public Student getbyId(Integer id) {
+        return studentRepository.findById(id).orElse(null);
+    }
+}
+
+// CourseServiceImpl.java================================>
+
+package com.company.resultmanagement.service.impl;
+
+import java.util.List;
+
+import org.springframework.stereotype.Service;
+
+import com.company.resultmanagement.entity.Course;
+import com.company.resultmanagement.repository.CourseRepository;
+import com.company.resultmanagement.service.CourseService;
+
+@Service
+public class CourseServiceImpl implements CourseService {
+
+    private final CourseRepository courseRepository;
+
+    public CourseServiceImpl(CourseRepository courseRepository) {
+        this.courseRepository = courseRepository;
+    }
+
+    @Override
+    public List<Course> getAllCourses() {
+        return courseRepository.findAllCourses();
+    }
+
+    @Override
+    public String insertCourse(Course course) {
+        courseRepository.save(course);
+        return "Course details inserted successfully.";
+    }
+
+    @Override
+    public String updateCourse(Course course) {
+        courseRepository.save(course);
+        return "Course details updated successfully.";
+    }
+
+    @Override
+    public Course getCourseById(Integer id) {
+        return courseRepository.findById(id).orElse(null);
+    }
+
+    @Override
+    public String deleteCourse(Integer id) {
+        courseRepository.deleteById(id);
+        return "Course deleted successfully.";
+    }
+
+    @Override
+    public Course getbyId(Integer id) {
+        return courseRepository.findById(id).orElse(null);
+    }
+
+    @Override
+    public Course getCourseByName(String courseName) {
+        return courseRepository.findCourseByCourseName(courseName);
+    }
+}
+
+// ResultServiceImpl.java======================================>
+
+package com.company.resultmanagement.service.impl;
+
+import java.util.List;
+
+import org.springframework.stereotype.Service;
+
+import com.company.resultmanagement.entity.Result;
+import com.company.resultmanagement.repository.ResultRepository;
+import com.company.resultmanagement.service.ResultService;
+
+@Service
+public class ResultServiceImpl implements ResultService {
+
+    private final ResultRepository resultRepository;
+
+    public ResultServiceImpl(ResultRepository resultRepository) {
+        this.resultRepository = resultRepository;
+    }
+
+    @Override
+    public List<Result> getAllResults() {
+        return resultRepository.findAllResults();
+    }
+
+    @Override
+    public String insertResult(Result result) {
+        resultRepository.save(result);
+        return "Result inserted successfully.";
+    }
+
+    @Override
+    public String updateResult(Result result) {
+        resultRepository.save(result);
+        return "Result updated successfully.";
+    }
+
+    @Override
+    public Result getResultById(Integer id) {
+        return resultRepository.findById(id).orElse(null);
+    }
+
+    @Override
+    public String deleteResult(Integer id) {
+        resultRepository.deleteById(id);
+        return "Result deleted successfully.";
+    }
+
+    @Override
+    public Result getbyId(Integer id) {
+        return resultRepository.findById(id).orElse(null);
+    }
+
+    @Override
+    public Result getResultByStudentAndCourse(Integer studentId, Integer courseId) {
+        return resultRepository.findResultByStudentAndCourse(studentId, courseId);
+    }
+}
+
+
+
+
+CONTROLLER CLASSES
+
+// StudentController.java===============================>
+
+package com.company.resultmanagement.controller;
+
+import java.util.List;
+
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
+
+import com.company.resultmanagement.entity.Student;
+import com.company.resultmanagement.service.StudentService;
+
+@RestController
+@RequestMapping("/students")
+public class StudentController {
+
+    private final StudentService studentService;
+
+    public StudentController(StudentService studentService) {
+        this.studentService = studentService;
+    }
+
+    @PostMapping("/insert")
+    public ResponseEntity<String> insert(@RequestBody Student student) {
+        String message = studentService.insertStudent(student);
+        return new ResponseEntity<>(message, HttpStatus.CREATED);
+    }
+
+    @GetMapping("/getall")
+    public ResponseEntity<?> getAllStudents() {
+        List<Student> students = studentService.getAllStudents();
+        if (students.isEmpty()) {
+            return new ResponseEntity<>("No Data",HttpStatus.NOT_FOUND);
+        }
+        return new ResponseEntity<>(students, HttpStatus.OK);
+    }
+
+    @PutMapping("/update")
+    public ResponseEntity<String> update(@RequestBody Student student) {
+        String message = studentService.updateStudent(student);
+        return new ResponseEntity<>(message, HttpStatus.CREATED);
+    }
+
+    @DeleteMapping("/delete/{id}")
+    public ResponseEntity<String> delete(@PathVariable("id") Integer id) {
+        String message = studentService.deleteStudent(id);
+        return new ResponseEntity<>(message, HttpStatus.OK);
+    }
+
+    @GetMapping("/get/{id}")
+    public ResponseEntity<Student> get(@PathVariable("id") Integer id) {
+        Student student = studentService.getStudentById(id);
+        return new ResponseEntity<>(student, HttpStatus.OK);
+    }
+}
+
+// CourseController.java=======================================>
+
+package com.company.resultmanagement.controller;
+
+import java.util.List;
+
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
+
+import com.company.resultmanagement.entity.Course;
+import com.company.resultmanagement.service.CourseService;
+
+@RestController
+@RequestMapping("/courses")
+public class CourseController {
+
+    private final CourseService courseService;
+
+    public CourseController(CourseService courseService) {
+        this.courseService = courseService;
+    }
+
+    @PostMapping("/insert")
+    public ResponseEntity<String> insert(@RequestBody Course course) {
+        String message = courseService.insertCourse(course);
+        return new ResponseEntity<>(message, HttpStatus.CREATED);
+    }
+
+    @GetMapping("/getall")
+    public ResponseEntity<List<Course>> getAllCourses() {
+        List<Course> courses = courseService.getAllCourses();
+        if (courses.isEmpty()) {
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
+        return new ResponseEntity<>(courses, HttpStatus.OK);
+    }
+
+    @PutMapping("/update")
+    public ResponseEntity<String> update(@RequestBody Course course) {
+        String message = courseService.updateCourse(course);
+        return new ResponseEntity<>(message, HttpStatus.CREATED);
+    }
+
+    @DeleteMapping("/delete/{id}")
+    public ResponseEntity<String> delete(@PathVariable("id") Integer id) {
+        String message = courseService.deleteCourse(id);
+        return new ResponseEntity<>(message, HttpStatus.OK);
+    }
+
+    @GetMapping("/getCourseByName/{courseName}")
+    public ResponseEntity<Course> getCourseByName(@PathVariable("courseName") String courseName) {
+        Course course = courseService.getCourseByName(courseName);
+        if (course != null) {
+            return ResponseEntity.ok(course);
+        } else {
+            return ResponseEntity.status(404).body(null);
+        }
+    }
+}
+
+// ResultController.java===========================>
+
+package com.company.resultmanagement.controller;
+
+import java.util.List;
+
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
+
+import com.company.resultmanagement.entity.Result;
+import com.company.resultmanagement.service.ResultService;
+
+@RestController
+@RequestMapping("/results")
+public class ResultController {
+
+    private final ResultService resultService;
+
+    public ResultController(ResultService resultService) {
+        this.resultService = resultService;
+    }
+
+    @PostMapping("/insert")
+    public ResponseEntity<String> insert(@RequestBody Result result) {
+        String message = resultService.insertResult(result);
+        return new ResponseEntity<>(message, HttpStatus.CREATED);
+    }
+
+    @GetMapping("/getall")
+    public ResponseEntity<List<Result>> getAllResults() {
+        List<Result> results = resultService.getAllResults();
+        if (results.isEmpty()) {
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
+        return new ResponseEntity<>(results, HttpStatus.OK);
+    }
+
+    @PutMapping("/update")
+    public ResponseEntity<String> update(@RequestBody Result result) {
+        String message = resultService.updateResult(result);
+        return new ResponseEntity<>(message, HttpStatus.CREATED);
+    }
+
+    @DeleteMapping("/delete/{id}")
+    public ResponseEntity<String> delete(@PathVariable("id") Integer id) {
+        String message = resultService.deleteResult(id);
+        return new ResponseEntity<>(message, HttpStatus.OK);
+    }
+
+    @GetMapping("/get/{id}")
+    public ResponseEntity<Result> get(@PathVariable("id") Integer id) {
+        Result result = resultService.getResultById(id);
+        return new ResponseEntity<>(result, HttpStatus.OK);
+    }
+
+    @GetMapping("/getByStudentAndCourse/{studentId}/{courseId}")
+    public ResponseEntity<Result> getByStudentAndCourse(
+            @PathVariable("studentId") Integer studentId,
+            @PathVariable("courseId") Integer courseId) {
+        Result result = resultService.getResultByStudentAndCourse(studentId, courseId);
+        return new ResponseEntity<>(result, HttpStatus.OK);
+    }
+}
+
+
